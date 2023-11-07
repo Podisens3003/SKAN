@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "../../images/logo.svg";
 import logoW from "../../images/logoWhite.svg";
 import avatar from "../../images/avatar.svg";
@@ -7,6 +7,7 @@ import close from "../../images/close.svg";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../Providers/AuthProvider";
 import Loader from "./Loader";
+import GetInfo from "../APISkan/getInfo";
 
 function Header() {
   const navItem = ["Главная", "Тарифы", "FAQ"];
@@ -27,9 +28,9 @@ function Header() {
             clickLink={() => console.log(logMassage)}
             open={logMassage}
           />
-          {isAuth && <CompanyLimitInfo />}
+          {isAuth && <CompanyLimitInfo/>}
           {(isAuth && (
-            <UserInfo name={userName} isAuth={isAuth} setAuth={setAuth} />
+            <UserInfo name={userName} isAuth={isAuth} setAuth={setAuth}/>
           )) || (
             <LoginToAccount
               clickLink={() => console.log(logMassage)}
@@ -58,14 +59,35 @@ export function Logo({ img, alt }) {
 }
 
 function CompanyLimitInfo() {
+  const [limit, setLimit] = useState(false);
+  useEffect(()=>{
+    GetInfo()
+    .then(res=> {
+      setLimit({
+            companyLimit: res.data.eventFiltersInfo.companyLimit,
+            usedCompanyCount: res.data.eventFiltersInfo.usedCompanyCount
+        })
+    })
+    .catch(error => console.log(error))
+  },[])
+
   return (
     <div className="info-limit">
-      <Loader/>
+      {!limit && <Loader/> || <>
+        
+        <span className="company-info-spans">
+          Использовано компаний <span style={{fontSize: '14px', fontWeight: '700'}}>{limit.companyLimit}</span>
+        </span>
+        <span className="company-info-spans">
+          Лимит по компаниям <span style={{fontSize: '14px', fontWeight: '700', color: '#8AC540'}}>{limit.usedCompanyCount}</span>
+        </span>
+        
+      </>}
     </div>
   );
 }
 
-function UserInfo({ name, isAuth, setAuth }) {
+function UserInfo({ name, isAuth, setAuth}) {
   return (
     <div className="avatar-wrapper">
       <div>

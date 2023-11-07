@@ -5,7 +5,7 @@ function TariffCard() {
     const cards = tariffs.map(item => (
         <div key={item.rateName} className="card">
             <CardTitle infoTitle={item}/>
-            <CardBody infoTitle={item}/>
+            <CardBody infoTitle={item} rateName={'Business'}/>
         </div>
     ));
     return (
@@ -35,13 +35,13 @@ function CardTitle({infoTitle}) {
     )
 }
 
-function CardBody({infoTitle}) {
-    let isTarif = true;
+function CardBody({infoTitle, rateName}) {
+    let isTarif = (rateName === infoTitle.rateName) ? true : false;
+    console.log('infoTitle', infoTitle, 'rateName', rateName, 'isTarif', isTarif, 'tarif-card-body inter-text is-tarif-'+rateName)
     let credit =  <p>или <NumberFormatter cost={infoTitle.mounthCost}/>₽/мес. при рассрочке на 24 мес.</p>
     return(
-        <div className="tarif-card-body inter-text"
-        //потом поменять логику добавления подсветки выбранного тарифа
-            style={{border: `${infoTitle.color} 2px solid`}}
+        <div 
+        className={isTarif ? ('tarif-card-body inter-text is-tarif-'+rateName) : 'tarif-card-body inter-text'}
         >
             {isTarif && (
                 <span className="badge">Текущий тариф</span>
@@ -51,7 +51,6 @@ function CardBody({infoTitle}) {
                 <NumberFormatter cost={infoTitle.cost}/>₽  <span className="decoration-prevcount"><NumberFormatter cost={infoTitle.prevCost}/>₽</span>
             </h4> 
             {infoTitle.mounthCost!== null && credit}
-            {/* <span className="badge style-btn">Текущий тариф</span> */}
 
             <div>
                 <span className="inter-text-20">В тариф входит:</span>
